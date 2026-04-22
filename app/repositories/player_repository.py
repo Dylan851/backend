@@ -4,10 +4,11 @@ from app.models.item import Item, PlayerItem
 from app.models.animal import Animal, Capture
 from app.models.map import Map, PlayerMapUnlocked
 from app.models.player import Player
+from app.models.user import User
 
 
-def create_player(db: Session, user_id: int) -> Player:
-    player = Player(user_id=user_id, level=1, coins=0, coord_lat=0.0, coord_lng=0.0)
+def create_player(db: Session, nickname: str | None = None) -> Player:
+    player = Player(nickname=nickname, level=1, coins=0, coord_lat=0.0, coord_lng=0.0)
     db.add(player)
     db.commit()
     db.refresh(player)
@@ -15,7 +16,10 @@ def create_player(db: Session, user_id: int) -> Player:
 
 
 def get_by_user_id(db: Session, user_id: int) -> Player | None:
-    return db.query(Player).filter(Player.user_id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.player_id:
+        return None
+    return db.query(Player).filter(Player.id == user.player_id).first()
 
 
 def get_by_id(db: Session, player_id: int) -> Player | None:

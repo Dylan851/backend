@@ -1,17 +1,19 @@
-from sqlalchemy import Column, DateTime, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey, literal
+from sqlalchemy.orm import relationship, column_property, synonym
 from sqlalchemy.sql import func
 
 from app.config.database import Base
 
 
 class User(Base):
-    __tablename__ = "Usuario"
+    __tablename__ = "usuario"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255), unique=True, index=True, nullable=False)
-    username = Column(String(100), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    id = Column("id_usuario", Integer, primary_key=True, index=True)
+    email = Column("email", String(255), unique=True, index=True, nullable=False)
+    password_hash = Column("password_hash", String(255), nullable=False)
+    player_id = Column("id_jugador", Integer, ForeignKey("jugador.id_jugador"), nullable=True)
+    # En la BD actual no existe username/created_at; usamos alias en runtime.
+    username = synonym("email")
+    created_at = column_property(literal(None))
 
     player = relationship("Player", back_populates="user", uselist=False)

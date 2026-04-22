@@ -10,11 +10,13 @@ from app.utils.jwt_handler import create_access_token
 def register(db: Session, email: str, username: str, password: str):
     if user_repository.get_by_identifier(db, email):
         raise HTTPException(status_code=400, detail="Email already registered")
-    if user_repository.get_by_identifier(db, username):
+    if username and user_repository.get_by_identifier(db, username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
-    user = user_repository.create_user(db, email, username, hash_password(password))
-    player = player_repository.create_player(db, user.id)
+    user = user_repository.create_user(db, email, hash_password(password))
+    nickname = username or email.split("@")[0]
+    player = player_repository.create_player(db, nickname=nickname)
+    user_repository.attach_player(db, user, player.id)
 
     token = create_access_token({"sub": str(user.id)})
     profile = player_service.build_profile(db, player)
@@ -29,7 +31,9 @@ def login(db: Session, identifier: str, password: str):
 
     player = player_repository.get_by_user_id(db, user.id)
     if not player:
-        player = player_repository.create_player(db, user.id)
+        nickname = identifier.split("@")[0] if "@" in identifier else identifier
+        player = player_repository.create_player(db, nickname=nickname)
+        user_repository.attach_player(db, user, player.id)
 
     token = create_access_token({"sub": str(user.id)})
     profile = player_service.build_profile(db, player)

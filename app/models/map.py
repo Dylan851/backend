@@ -1,17 +1,18 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, literal
+from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import func
 
 from app.config.database import Base
 
 
 class Map(Base):
-    __tablename__ = "Mapa"
+    __tablename__ = "mapa"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(150), nullable=False)
-    zona = Column(String(100), nullable=True)  # Zona del mapa (del script SQL)
-    required_level = Column(Integer, default=1, nullable=False)
+    id = Column("id_mapa", Integer, primary_key=True, index=True)
+    name = Column("nombre", String(150), nullable=False)
+    zona = Column("zona", String(100), nullable=True)  # Zona del mapa (del script SQL)
+    # En la BD actual no existe required_level; usamos un valor por defecto en runtime.
+    required_level = column_property(literal(1))
 
     animal_links = relationship("MapAnimal", back_populates="game_map")
     npc_links = relationship("MapNpc", back_populates="game_map")
@@ -20,35 +21,33 @@ class Map(Base):
 
 
 class PlayerMapUnlocked(Base):
-    __tablename__ = "Jugador_Mapa_Desbloqueado"
+    __tablename__ = "jugador_mapa_desbloqueado"
 
-    id = Column(Integer, primary_key=True, index=True)
-    player_id = Column(Integer, ForeignKey("Jugador.id"), nullable=False)
-    map_id = Column(Integer, ForeignKey("Mapa.id"), nullable=False)
-    unlocked_at = Column(DateTime(timezone=True), server_default=func.now())
+    player_id = Column("id_jugador", Integer, ForeignKey("jugador.id_jugador"), primary_key=True)
+    map_id = Column("id_mapa", Integer, ForeignKey("mapa.id_mapa"), primary_key=True)
+    unlocked_at = Column("fecha_desbloqueo", DateTime(timezone=False), nullable=True)
 
     player = relationship("Player", back_populates="unlocked_maps")
     game_map = relationship("Map", back_populates="unlocked_by_players")
 
 
 class MapNpc(Base):
-    __tablename__ = "Mapa_NPC"
+    __tablename__ = "mapa_npc"
 
-    id = Column(Integer, primary_key=True, index=True)
-    map_id = Column(Integer, ForeignKey("Mapa.id"), nullable=False)
-    npc_id = Column(Integer, ForeignKey("NPC.id"), nullable=False)
+    map_id = Column("id_mapa", Integer, ForeignKey("mapa.id_mapa"), primary_key=True)
+    npc_id = Column("id_npc", Integer, ForeignKey("npc.id_npc"), primary_key=True)
 
     game_map = relationship("Map", back_populates="npc_links")
     npc = relationship("Npc", back_populates="map_links")
 
 
 class MapItem(Base):
-    __tablename__ = "Mapa_Item"
+    __tablename__ = "mapa_item"
 
-    id = Column(Integer, primary_key=True, index=True)
-    map_id = Column(Integer, ForeignKey("Mapa.id"), nullable=False)
-    item_id = Column(Integer, ForeignKey("Item.id"), nullable=False)
-    quantity_available = Column(Integer, default=1, nullable=False)
+    map_id = Column("id_mapa", Integer, ForeignKey("mapa.id_mapa"), primary_key=True)
+    item_id = Column("id_item", Integer, ForeignKey("item.id_item"), primary_key=True)
+    # En la BD actual no existe quantity_available; usamos un valor por defecto en runtime.
+    quantity_available = column_property(literal(1))
 
     game_map = relationship("Map", back_populates="item_links")
     item = relationship("Item", back_populates="map_links")

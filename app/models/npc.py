@@ -5,10 +5,10 @@ from app.config.database import Base
 
 
 class Npc(Base):
-    __tablename__ = "NPC"
+    __tablename__ = "npc"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(150), nullable=False)
-    role = Column(String(100), nullable=True)
+    id = Column("id_npc", Integer, primary_key=True, index=True)
+    name = Column("nombre", String(150), nullable=False)
+    role = Column("habilidad", String(100), nullable=True)
 
     map_links = relationship("MapNpc", back_populates="npc")

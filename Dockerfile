@@ -7,15 +7,22 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory
 WORKDIR /app
 
+# Instalamos curl para healthcheck en Docker Compose.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy and install dependencies
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy application code
 COPY app /app/app
+COPY main.py /app/main.py
 
 # Expose port
 EXPOSE 8000
 
 # Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Compatible with Render: binds to PORT when available.
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
