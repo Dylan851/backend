@@ -11,6 +11,7 @@
 ## Required Environment Variables
 - `DATABASE_URL` = connection string from Supabase (SQLAlchemy format)
 - `JWT_SECRET` = long random secret
+- `GOOGLE_CLIENT_IDS` = comma-separated Google OAuth client IDs allowed to mint `id_token` (web/android)
 
 ## Recommended Environment Variables
 - `CORS_ORIGINS` = comma-separated frontend origins (for example `https://wildquest-frontend.onrender.com`)

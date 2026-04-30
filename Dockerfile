@@ -24,5 +24,5 @@ COPY main.py /app/main.py
 EXPOSE 8000
 
 # Run application
-# Nota: el puerto puede configurarse con la variable de entorno PORT en Docker Compose.
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Usa PORT cuando la plataforma lo inyecta (Render), con fallback local 8000.
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

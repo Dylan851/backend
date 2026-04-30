@@ -34,6 +34,25 @@ def update_location(db: Session, player: Player, coord_lat: float, coord_lng: fl
     return player
 
 
+def update_profile(
+    db: Session,
+    player: Player,
+    *,
+    nickname: str | None = None,
+    coins: int | None = None,
+    gems: int | None = None,
+) -> Player:
+    if nickname is not None:
+        player.nickname = nickname
+    if coins is not None:
+        player.coins = max(0, coins)
+    if gems is not None:
+        player.gems = max(0, gems)
+    db.commit()
+    db.refresh(player)
+    return player
+
+
 def get_inventory(db: Session, player_id: int):
     rows = (
         db.query(PlayerItem, Item)

@@ -12,6 +12,7 @@ class Player(Base):
     nickname = Column("apodo", String(150), nullable=True)
     level = Column("nivel", Integer, default=1, nullable=False)
     coins = Column("monedas", Integer, default=0, nullable=False)
+    gems = Column("diamantes", Integer, default=0, nullable=False)
     coord_lat = Column("ultima_latitud", Float, default=0.0, nullable=False)
     coord_lng = Column("ultima_longitud", Float, default=0.0, nullable=False)
     # En la BD actual no existe current_map_id; usamos None en runtime.

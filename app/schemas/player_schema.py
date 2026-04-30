@@ -9,6 +9,12 @@ class PlayerLocationUpdate(BaseModel):
     coord_lng: float
 
 
+class PlayerProfileUpdate(BaseModel):
+    nickname: Optional[str] = None
+    coins: Optional[int] = None
+    gems: Optional[int] = None
+
+
 class MapOut(BaseModel):
     id: int
     name: str
@@ -33,8 +39,10 @@ class CapturedAnimalOut(BaseModel):
 
 class PlayerProfileOut(BaseModel):
     id: int
+    nickname: Optional[str]
     level: int
     coins: int
+    gems: int
     coord_lat: float
     coord_lng: float
     current_map_id: Optional[int]

@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.routes import auth_routes, player_routes, animal_routes, map_routes, shop_routes
 from app import models  # noqa: F401
 from app.config.settings import settings
+from app.config.database import engine
 
 app = FastAPI(
     title="Animal GO API",
@@ -30,6 +32,18 @@ app.include_router(map_routes.router)
 app.include_router(map_routes.npc_router)
 app.include_router(map_routes.enemy_router)
 app.include_router(shop_routes.router)
+
+
+@app.on_event("startup")
+def apply_runtime_migrations():
+    # Ensure new economy column exists for existing databases.
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "ALTER TABLE jugador "
+                "ADD COLUMN IF NOT EXISTS diamantes INTEGER NOT NULL DEFAULT 0"
+            )
+        )
 
 
 @app.get("/health")
