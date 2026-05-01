@@ -14,8 +14,13 @@ app = FastAPI(
     description="API para Animal GO - Juego de captura de animales"
 )
 
-# Configure CORS for Flutter app and development
-cors_origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()]
+# Configure CORS for Flutter app and development.
+# Include FRONTEND_URL as a safety net for deployments where CORS_ORIGINS is incomplete.
+cors_origins = {origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()}
+frontend_origin = settings.FRONTEND_URL.strip()
+if frontend_origin:
+    cors_origins.add(frontend_origin)
+cors_origins = sorted(cors_origins)
 if cors_origins:
     app.add_middleware(
         CORSMiddleware,
