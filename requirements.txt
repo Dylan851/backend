@@ -9,3 +9,4 @@ pydantic-settings==2.3.4
 python-dotenv==1.0.1
 google-auth==2.40.3
 requests==2.32.3
+stripe==12.1.0

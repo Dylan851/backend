@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+import logging
 
-from app.routes import auth_routes, player_routes, animal_routes, map_routes, shop_routes
+from app.routes import auth_routes, player_routes, animal_routes, map_routes, shop_routes, payment_routes
 from app import models  # noqa: F401
 from app.config.settings import settings
 from app.config.database import engine
@@ -32,6 +33,9 @@ app.include_router(map_routes.router)
 app.include_router(map_routes.npc_router)
 app.include_router(map_routes.enemy_router)
 app.include_router(shop_routes.router)
+app.include_router(payment_routes.router)
+
+logger = logging.getLogger(__name__)
 
 
 @app.on_event("startup")
@@ -44,6 +48,24 @@ def apply_runtime_migrations():
                 "ADD COLUMN IF NOT EXISTS diamantes INTEGER NOT NULL DEFAULT 0"
             )
         )
+        conn.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS stripe_purchase ("
+                "id SERIAL PRIMARY KEY,"
+                "user_id INTEGER NOT NULL,"
+                "payment_intent_id VARCHAR(255) NOT NULL UNIQUE,"
+                "pack_id VARCHAR(64) NOT NULL,"
+                "currency_type VARCHAR(32) NOT NULL,"
+                "quantity INTEGER NOT NULL,"
+                "amount INTEGER NOT NULL,"
+                "currency VARCHAR(10) NOT NULL,"
+                "status VARCHAR(32) NOT NULL,"
+                "created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()"
+                ")"
+            )
+        )
+    if not settings.STRIPE_WEBHOOK_SECRET.strip():
+        logger.warning("STRIPE_WEBHOOK_SECRET is not configured yet; /stripe/webhook will reject requests.")
 
 
 @app.get("/health")

@@ -33,8 +33,6 @@ def update_profile(
         db,
         player.id,
         nickname=payload.nickname,
-        coins=payload.coins,
-        gems=payload.gems,
     )
     return {"success": True, "data": profile}
 

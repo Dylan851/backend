@@ -160,3 +160,17 @@ JOIN "Item" i ON mi.id_item = i.id;
 -- SELECT * FROM v_enemigos_info;
 -- SELECT * FROM v_aldeanos_info;
 -- SELECT * FROM v_mapa_items_info;
+
+-- 8. Stripe purchases (idempotencia por payment_intent_id)
+CREATE TABLE IF NOT EXISTS stripe_purchase (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    payment_intent_id VARCHAR(255) NOT NULL UNIQUE,
+    pack_id VARCHAR(64) NOT NULL,
+    currency_type VARCHAR(32) NOT NULL,
+    quantity INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    status VARCHAR(32) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

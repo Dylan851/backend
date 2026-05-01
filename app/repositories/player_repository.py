@@ -39,15 +39,9 @@ def update_profile(
     player: Player,
     *,
     nickname: str | None = None,
-    coins: int | None = None,
-    gems: int | None = None,
 ) -> Player:
     if nickname is not None:
         player.nickname = nickname
-    if coins is not None:
-        player.coins = max(0, coins)
-    if gems is not None:
-        player.gems = max(0, gems)
     db.commit()
     db.refresh(player)
     return player

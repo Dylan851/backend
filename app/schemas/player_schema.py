@@ -11,8 +11,6 @@ class PlayerLocationUpdate(BaseModel):
 
 class PlayerProfileUpdate(BaseModel):
     nickname: Optional[str] = None
-    coins: Optional[int] = None
-    gems: Optional[int] = None
 
 
 class MapOut(BaseModel):

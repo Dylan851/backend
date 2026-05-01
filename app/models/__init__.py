@@ -7,6 +7,7 @@ from app.models.npc import Npc
 from app.models.enemigo import Enemigo
 from app.models.aldeano import Aldeano
 from app.models.purchase import Purchase, CoinTransaction
+from app.models.stripe_purchase import StripePurchase
 
 __all__ = [
     "User",
@@ -25,4 +26,5 @@ __all__ = [
     "Aldeano",
     "Purchase",
     "CoinTransaction",
+    "StripePurchase",
 ]

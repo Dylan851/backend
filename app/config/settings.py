@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     JWT_EXPIRES_MINUTES: int = 10080  # 7 days
     GOOGLE_CLIENT_IDS: str = ""
     DIRECT_URL: str = ""  # For migrations, optional
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

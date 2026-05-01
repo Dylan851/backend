@@ -40,8 +40,6 @@ def update_profile(
     player_id: int,
     *,
     nickname: str | None = None,
-    coins: int | None = None,
-    gems: int | None = None,
 ):
     player = player_repository.get_by_id(db, player_id)
     if not player:
@@ -50,8 +48,6 @@ def update_profile(
         db,
         player,
         nickname=nickname,
-        coins=coins,
-        gems=gems,
     )
     return build_profile(db, player)
 
