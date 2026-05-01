@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.config.settings import settings
 from app.middleware.auth_middleware import get_current_player
-from app.schemas.payment_schema import CreatePaymentIntentIn
+from app.schemas.payment_schema import CreateCheckoutSessionIn, CreatePaymentIntentIn
 from app.services import payment_service
 
 import stripe
@@ -20,6 +20,22 @@ def create_payment_intent(
         auth_player_id=player.id,
         user_id=payload.user_id,
         pack_id=payload.pack_id,
+    )
+    return {"success": True, "data": result}
+
+
+def create_checkout_session(
+    payload: CreateCheckoutSessionIn,
+    db: Session = Depends(get_db),
+    player=Depends(get_current_player),
+):
+    result = payment_service.create_checkout_session(
+        db,
+        auth_player_id=player.id,
+        user_id=payload.user_id,
+        pack_id=payload.pack_id,
+        success_url=payload.success_url,
+        cancel_url=payload.cancel_url,
     )
     return {"success": True, "data": result}
 
@@ -43,5 +59,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event["type"] == "payment_intent.succeeded":
         payment_service.handle_payment_intent_succeeded(db, event["data"]["object"])
+    elif event["type"] == "checkout.session.completed":
+        payment_service.handle_checkout_session_completed(db, event["data"]["object"])
 
     return {"received": True}

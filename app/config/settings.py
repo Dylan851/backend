@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     JWT_EXPIRES_MINUTES: int = 10080  # 7 days
     GOOGLE_CLIENT_IDS: str = ""
     DIRECT_URL: str = ""  # For migrations, optional
+    FRONTEND_URL: str = "http://localhost:8080"
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
 
