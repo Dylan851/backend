@@ -55,6 +55,18 @@ def apply_runtime_migrations():
         )
         conn.execute(
             text(
+                "ALTER TABLE usuario "
+                "ADD COLUMN IF NOT EXISTS has_password BOOLEAN NOT NULL DEFAULT TRUE"
+            )
+        )
+        conn.execute(
+            text(
+                "ALTER TABLE usuario "
+                "ADD COLUMN IF NOT EXISTS has_google BOOLEAN NOT NULL DEFAULT FALSE"
+            )
+        )
+        conn.execute(
+            text(
                 "CREATE TABLE IF NOT EXISTS stripe_purchase ("
                 "id SERIAL PRIMARY KEY,"
                 "user_id INTEGER NOT NULL,"

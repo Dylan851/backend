@@ -13,12 +13,20 @@ class UserLogin(BaseModel):
     password: str
 
 
+class EmailLookupRequest(BaseModel):
+    email: EmailStr
+
+
 class GoogleAuthRequest(BaseModel):
     id_token: str
 
 
 class SupabaseAuthRequest(BaseModel):
     access_token: str
+
+
+class PasswordRecoveryRequest(BaseModel):
+    email: EmailStr
 
 
 class TokenResponse(BaseModel):
