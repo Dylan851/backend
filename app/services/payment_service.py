@@ -14,6 +14,8 @@ PACKS = {
     "diamonds_10": {"quantity": 10, "amount": 199, "currency_type": "diamonds"},
     "diamonds_30": {"quantity": 30, "amount": 499, "currency_type": "diamonds"},
     "diamonds_75": {"quantity": 75, "amount": 999, "currency_type": "diamonds"},
+    # Personajes premium: currency_type="character", quantity=1, item_id=ID del personaje.
+    "character_link": {"quantity": 1, "amount": 499, "currency_type": "character", "item_id": "link"},
 }
 
 
@@ -47,6 +49,7 @@ def create_payment_intent(db: Session, *, auth_player_id: int, user_id: int, pac
             "pack_id": pack_id,
             "currency_type": pack["currency_type"],
             "quantity": str(pack["quantity"]),
+            "item_id": str(pack.get("item_id", "")),
         },
         automatic_payment_methods={"enabled": True},
     )
@@ -91,6 +94,7 @@ def create_checkout_session(
             "pack_id": pack_id,
             "currency_type": pack["currency_type"],
             "quantity": str(pack["quantity"]),
+            "item_id": str(pack.get("item_id", "")),
         },
         payment_intent_data={
             "metadata": {
@@ -128,7 +132,7 @@ def _apply_successful_purchase(
     currency_type = str(metadata.get("currency_type", ""))
     quantity = int(metadata.get("quantity", "0"))
 
-    if user_id <= 0 or quantity <= 0 or currency_type not in {"coins", "diamonds"} or not pack_id:
+    if user_id <= 0 or quantity <= 0 or currency_type not in {"coins", "diamonds", "character"} or not pack_id:
         raise HTTPException(status_code=400, detail="Invalid payment metadata")
 
     player = db.query(Player).filter(Player.id == user_id).first()
@@ -149,10 +153,41 @@ def _apply_successful_purchase(
 
     if currency_type == "coins":
         player.coins += quantity
-    else:
+    elif currency_type == "diamonds":
         player.gems += quantity
+    # currency_type == "character": no incrementa monedas; el desbloqueo se
+    # consulta vía /payments/owned-characters (lista los pack_id "character_*"
+    # comprados por el jugador).
 
     db.commit()
+
+
+def list_owned_characters(db: Session, *, user_id: int) -> list[str]:
+    """Devuelve los `item_id` de los personajes premium ya comprados por user_id.
+
+    Mapea el `pack_id` (p.ej. 'character_link') a su `item_id` definido en PACKS.
+    """
+    rows = (
+        db.query(StripePurchase.pack_id)
+        .filter(
+            StripePurchase.user_id == user_id,
+            StripePurchase.currency_type == "character",
+            StripePurchase.status == "succeeded",
+        )
+        .all()
+    )
+    out: list[str] = []
+    seen: set[str] = set()
+    for (pack_id,) in rows:
+        pack = PACKS.get(str(pack_id))
+        if not pack:
+            continue
+        item_id = str(pack.get("item_id", ""))
+        if not item_id or item_id in seen:
+            continue
+        seen.add(item_id)
+        out.append(item_id)
+    return out
 
 
 def handle_payment_intent_succeeded(db: Session, payment_intent):

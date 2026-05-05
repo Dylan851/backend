@@ -63,3 +63,12 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         payment_service.handle_checkout_session_completed(db, event["data"]["object"])
 
     return {"received": True}
+
+
+def list_owned_characters(
+    db: Session = Depends(get_db),
+    player=Depends(get_current_player),
+):
+    """Lista los IDs de personajes premium comprados por el jugador autenticado."""
+    ids = payment_service.list_owned_characters(db, user_id=player.id)
+    return {"success": True, "data": {"characters": ids}}
