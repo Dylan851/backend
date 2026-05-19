@@ -10,7 +10,7 @@ pipeline {
 
         stage('Ver archivos del repositorio') {
             steps {
-                sh 'ls -la'
+                bat 'dir'
             }
         }
 
