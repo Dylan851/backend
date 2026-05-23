@@ -96,6 +96,36 @@ Si el backend corre en local en el puerto `8000`, el frontend debe usar:
 - Android Emulator: `http://10.0.2.2:8000`
 - Movil fisico: `http://IP_DEL_PC:8000`
 
+## Tests
+
+Para ejecutar los tests del backend:
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m pytest test -q
+```
+
+Actualmente hay tests de salud, autenticacion y perfil.
+
+| Test | Que comprueba | Por que es importante |
+|---|---|---|
+| `test_health` | Que `/health` responde `200` y devuelve estado `ok`. | Verifica que la API esta viva. |
+| `test_register_creates_user_and_player` | Que al registrarte se crea el usuario, se crea su player y se devuelve token. | Confirma que el alta basica funciona de verdad. |
+| `test_register_normalizes_email_to_lowercase` | Que el email se guarda en minusculas aunque el usuario lo escriba con mayusculas. | Evita duplicados raros y problemas al iniciar sesion. |
+| `test_register_rejects_duplicate_email` | Que no se puede registrar dos veces el mismo correo. | Protege la integridad de cuentas. |
+| `test_register_rejects_duplicate_username` | Que no se puede reutilizar un nombre de usuario ya existente. | Evita colisiones entre jugadores. |
+| `test_login_with_email_returns_token_and_profile` | Que el login con email y contrasena correctos devuelve token y perfil. | Comprueba el acceso normal a la aplicacion. |
+| `test_login_with_username_works` | Que tambien se puede iniciar sesion usando el nombre de usuario. | Verifica una via de login que usa el frontend. |
+| `test_login_rejects_wrong_password` | Que una contrasena incorrecta devuelve error `401`. | Garantiza que la autenticacion no acepta credenciales invalidas. |
+| `test_auth_methods_reports_existing_password_account` | Que `/auth/methods` detecta una cuenta existente con contrasena. | Sirve para flujos de login y registro mas inteligentes. |
+| `test_auth_methods_reports_non_existing_account` | Que `/auth/methods` indica correctamente que el correo no existe. | Evita decisiones erroneas en frontend. |
+| `test_password_recovery_returns_generic_message_for_existing_password_user` | Que la recuperacion de contrasena responde correctamente si la cuenta existe. | Comprueba el flujo de recuperacion. |
+| `test_password_recovery_returns_generic_message_for_non_existing_user` | Que la recuperacion no rompe aunque el correo no exista. | Evita filtracion de informacion y errores innecesarios. |
+| `test_profile_requires_authentication` | Que `/player/profile` no se puede consultar sin token. | Asegura que el perfil esta protegido. |
+| `test_get_profile_returns_registered_player_data` | Que el perfil autenticado devuelve nickname, nivel, monedas e inventario correctos. | Verifica que los datos del jugador se guardan y leen bien. |
+| `test_update_profile_changes_nickname` | Que cambiar el nickname desde `/player/profile` realmente lo actualiza. | Comprueba persistencia de cambios del usuario. |
+| `test_update_location_changes_coordinates` | Que `/player/location` guarda bien latitud y longitud. | Verifica que el backend actualiza estado del jugador. |
+
 ## Notas importantes
 
 - Este README no cambia el despliegue actual.
