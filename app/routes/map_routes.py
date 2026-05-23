@@ -7,6 +7,7 @@ router = APIRouter(prefix="/maps", tags=["maps"])
 router.get("")(map_controller.list_maps)
 router.get("/unlocked")(map_controller.list_unlocked_maps)
 router.post("/unlock")(map_controller.unlock_map)
+router.get("/{map_id}")(map_controller.get_map_detail)
 
 npc_router = APIRouter(prefix="/npc", tags=["npc"])
 

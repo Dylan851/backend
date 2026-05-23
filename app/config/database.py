@@ -3,7 +3,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config.settings import settings
 
-# Connection pool configuration optimized for Supabase
+# Connection pool configuration optimized for PostgreSQL / Supabase.
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,  # Verify connections are alive before using
