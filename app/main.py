@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 @app.on_event("startup")
 def apply_runtime_migrations():
-    # Ensure new economy column exists for existing databases.
+    # Ensure new economy column exists for existing PostgreSQL databases.
     with engine.begin() as conn:
         conn.execute(
             text(

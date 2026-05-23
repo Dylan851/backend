@@ -9,6 +9,13 @@ def list_maps(db: Session):
     return db.query(Map).all()
 
 
+def get_map(db: Session, map_id: int):
+    game_map = db.query(Map).filter(Map.id == map_id).first()
+    if not game_map:
+        raise HTTPException(status_code=404, detail="Map not found")
+    return game_map
+
+
 def list_unlocked(db: Session, player_id: int):
     return (
         db.query(Map)

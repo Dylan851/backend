@@ -15,6 +15,21 @@ def list_maps(db: Session = Depends(get_db)):
     return {"success": True, "data": {"maps": payload}}
 
 
+def get_map_detail(
+    map_id: int,
+    db: Session = Depends(get_db),
+):
+    game_map = map_service.get_map(db, map_id)
+    return {
+        "success": True,
+        "data": {
+            "id": game_map.id,
+            "name": game_map.name,
+            "required_level": game_map.required_level,
+        },
+    }
+
+
 def list_unlocked_maps(
     db: Session = Depends(get_db),
     player=Depends(get_current_player),

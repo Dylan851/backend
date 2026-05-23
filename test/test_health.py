@@ -9,6 +9,10 @@ os.environ.setdefault("JWT_SECRET", "test_secret")
 from fastapi.testclient import TestClient
 from app.main import app
 
+# El test solo verifica el endpoint /health. Limpiamos el startup para que no
+# dependa de una base de datos real durante la prueba.
+app.router.on_startup.clear()
+
 client = TestClient(app)
 
 def test_health():

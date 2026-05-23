@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from app.models.animal import Animal, Capture, MapAnimal
 
 
+def list_all(db: Session):
+    return db.query(Animal).all()
+
+
 def list_by_map(db: Session, map_id: int):
     return (
         db.query(Animal)
