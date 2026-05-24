@@ -2,9 +2,20 @@
 
 Backend FastAPI de AnimalGO.
 
+## Importante para la entrega
+
+Si recibes el proyecto en un `.zip`, para arrancar el backend usa esta carpeta:
+
+```text
+proyecto/backend
+```
+
+No hace falta usar `backend/backend`. La carpeta correcta para ejecutar la API
+de la entrega es `backend`.
+
 ## Objetivo
 
-Este README esta pensado para lanzar el backend en local manteniendo:
+Este backend esta preparado para ejecutarse en local manteniendo:
 
 - la base de datos en la nube
 - la autenticacion en la nube
@@ -18,14 +29,20 @@ cloud y, si configuras las variables, tambien el flujo de autenticacion cloud.
 - Python 3.11 o 3.12
 - `pip`
 
-## Archivo de entorno recomendado para local
+## Archivo `.env`
 
-Usa [`.env.local.example`](</C:/Users/dylan/Desktop/proyecto/proyecto/backend/.env.local.example>) como plantilla para levantar el backend en local conectado a la nube.
+En la entrega puede pasar una de estas dos cosas:
 
-Pasos:
+1. Ya existe un archivo `.env` dentro de `backend`.
+   En ese caso no tienes que copiar nada, puedes usarlo directamente.
+2. No existe `.env`.
+   En ese caso copia `.env.local.example` a `.env` y rellena los valores.
 
-1. Copia `.env.local.example` a `.env`
-2. Rellena los valores reales del proyecto cloud
+Comando PowerShell para copiarlo si hace falta:
+
+```powershell
+Copy-Item .env.local.example .env
+```
 
 ### Variables importantes
 
@@ -53,30 +70,53 @@ Pasos:
 
 ### Windows PowerShell
 
+Abre PowerShell dentro de la carpeta `backend` y ejecuta:
+
 ```powershell
-cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-Copy-Item .env.local.example .env
-# Edita .env y pega las credenciales reales cloud
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Si el archivo `.env` no viene ya incluido en la entrega, antes de arrancar
+ejecuta:
+
+```powershell
+Copy-Item .env.local.example .env
 ```
 
 Si `python` no esta en el `PATH`, puedes sustituirlo por `py`.
 
+Si la carpeta `.venv` incluida en el `.zip` no funciona en otro ordenador,
+borra esa `.venv` y vuelve a crearla con los comandos anteriores. Esto es
+normal al mover proyectos Python entre equipos.
+
+### Comando minimo de arranque
+
+Si ya existe `.env` y el entorno virtual ya esta creado, el backend se arranca
+con:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 ### Linux / macOS
 
 ```bash
-cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-cp .env.local.example .env
-# Edita .env y pega las credenciales reales cloud
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Si no existe `.env`, copia antes:
+
+```bash
+cp .env.local.example .env
 ```
 
 ## Comprobacion de arranque
@@ -101,7 +141,6 @@ Si el backend corre en local en el puerto `8000`, el frontend debe usar:
 Para ejecutar los tests del backend:
 
 ```powershell
-cd backend
 .\.venv\Scripts\python.exe -m pytest test -q
 ```
 
@@ -132,3 +171,4 @@ Actualmente hay tests de salud, autenticacion y perfil.
 - La base de datos sigue siendo cloud.
 - La autenticacion puede seguir siendo cloud si rellenas `SUPABASE_URL` y `SUPABASE_ANON_KEY`.
 - No subas `.env` al repositorio.
+- Para la entrega en `.zip`, usa siempre esta carpeta: `backend`.
