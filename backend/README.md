@@ -2,41 +2,30 @@
 
 Backend FastAPI de AnimalGO.
 
-## Importante para la entrega
-
-Si recibes el proyecto en un `.zip`, para arrancar el backend usa esta carpeta:
-
-```text
-proyecto/backend
-```
-
-No hace falta usar `backend/backend`. La carpeta correcta para ejecutar la API
-de la entrega es `backend`.
-
 ## Objetivo
 
-Este backend esta preparado para ejecutarse en local manteniendo:
+Este README esta pensado para lanzar el backend en local manteniendo:
 
 - la base de datos en la nube
 - la autenticacion en la nube
 - el frontend ejecutandose en local
 
 Es decir: el backend corre en tu PC, pero sigue usando Supabase / PostgreSQL
-cloud mediante el archivo `.env` incluido en la entrega.
+cloud y, si configuras las variables, tambien el flujo de autenticacion cloud.
 
 ## Requisitos
 
 - Python 3.11 o 3.12
 - `pip`
 
-## Archivo `.env`
+## Archivo de entorno recomendado para local
 
-La entrega comprimida incluye un archivo `.env` dentro de la carpeta `backend`.
-No hay que copiar ni crear ningún archivo adicional: el backend lo cargará
-automáticamente al arrancar.
+Usa [`.env.local.example`](</C:/Users/dylan/Desktop/proyecto/proyecto/backend/.env.local.example>) como plantilla para levantar el backend en local conectado a la nube.
 
-Este archivo contiene la configuración necesaria para conectar con Supabase,
-PostgreSQL, autenticación y, si corresponde, Stripe.
+Pasos:
+
+1. Copia `.env.local.example` a `.env`
+2. Rellena los valores reales del proyecto cloud
 
 ### Variables importantes
 
@@ -64,39 +53,29 @@ PostgreSQL, autenticación y, si corresponde, Stripe.
 
 ### Windows PowerShell
 
-Abre PowerShell dentro de la carpeta `backend` y ejecuta:
-
 ```powershell
+cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+Copy-Item .env.local.example .env
+# Edita .env y pega las credenciales reales cloud
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Si `python` no esta en el `PATH`, puedes sustituirlo por `py`.
 
-Si la carpeta `.venv` incluida en el `.zip` no funciona en otro ordenador,
-borra esa `.venv` y vuelve a crearla con los comandos anteriores. Esto es
-normal al mover proyectos Python entre equipos.
-
-### Comando minimo de arranque
-
-Como la entrega ya incluye `.env`, si el entorno virtual ya esta creado, el
-backend se arranca con:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
 ### Linux / macOS
 
 ```bash
+cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+cp .env.local.example .env
+# Edita .env y pega las credenciales reales cloud
 python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
@@ -122,7 +101,7 @@ Si el backend corre en local en el puerto `8000`, el frontend debe usar:
 Para ejecutar los tests del backend:
 
 ```powershell
-python -m pip install -r requirements.txt
+cd backend
 .\.venv\Scripts\python.exe -m pytest test -q
 ```
 
@@ -146,3 +125,10 @@ Actualmente hay tests de salud, autenticacion y perfil.
 | `test_get_profile_returns_registered_player_data` | Que el perfil autenticado devuelve nickname, nivel, monedas e inventario correctos. | Verifica que los datos del jugador se guardan y leen bien. |
 | `test_update_profile_changes_nickname` | Que cambiar el nickname desde `/player/profile` realmente lo actualiza. | Comprueba persistencia de cambios del usuario. |
 | `test_update_location_changes_coordinates` | Que `/player/location` guarda bien latitud y longitud. | Verifica que el backend actualiza estado del jugador. |
+
+## Notas importantes
+
+- Este README no cambia el despliegue actual.
+- La base de datos sigue siendo cloud.
+- La autenticacion puede seguir siendo cloud si rellenas `SUPABASE_URL` y `SUPABASE_ANON_KEY`.
+- No subas `.env` al repositorio.
